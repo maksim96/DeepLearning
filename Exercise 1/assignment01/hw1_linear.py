@@ -17,7 +17,7 @@ def predict(X,W,b):
 
     Should return a N dimensional array  
     """
-    return sigmoid(np.dot(W,X) + b[:,np.newaxis])
+    return sigmoid(np.dot(X,W) + b)
     
  
 def sigmoid(a): 
@@ -39,12 +39,12 @@ def l2loss(X,y,W,b):
     b: scalar bias
 
     Should return three variables: (i) the l2 loss: scalar, (ii) the gradient with respect to W, (iii) the gradient with respect to b
-     """
-    diff = y - predict(X,W,b)
+    """
+    s = predict(X, W, b)
+    diff = y - s
     loss = np.dot(diff,diff)
-    s = sigmoid(np.dot(W,X) + b)
-    grad_w = 2*np.sum(s*(1-s)*(y-s))
-    grad_b = 2*np.sum(np.dot(X,s*(1-s)*(y-s)))
+    grad_w = -2*np.sum(X.T*s*(1-s)*diff, axis=1)
+    grad_b = -2*np.sum(s*(1-s)*diff)
 
     return loss, grad_w, grad_b
 
@@ -58,20 +58,16 @@ def train(X,y,W,b, num_iters=1000, eta=0.001):
     num_iters: (optional) number of steps to take when optimizing
     eta: (optional)  the stepsize for the gradient descent
 
-    Should return the final values of W and b    
+    Should return the final values of W and b
+    Returns also all loss values during the optimization
     """
 
     all_losses = []
 
-    for _ in range(num_iters):
+    for i in range(num_iters):
+
         loss,grad_w, grad_b = l2loss(X,y,W,b)
         W -= eta*grad_w
         b -= eta*grad_b
         all_losses.append(loss)
     return W,b,all_losses
-
-
-
-
-
- 

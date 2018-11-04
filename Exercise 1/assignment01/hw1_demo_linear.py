@@ -26,7 +26,7 @@ W0 = np.zeros(X_train.shape[1])
 b0 = 0
 
 # Optimization
-num_iters = 100; 
+num_iters = 1000;
 eta = 0.001
 W,b,all_losses = mlBasics.train(X_train, y_train, W0, b0, num_iters, eta)
  
@@ -35,4 +35,6 @@ W,b,all_losses = mlBasics.train(X_train, y_train, W0, b0, num_iters, eta)
 yhat = mlBasics.predict(X_test, W, b)>=.5 
 print(np.mean(yhat==y_test)*100, "% of test examples classified correctly.")
 
-plt.plot(range(1000), all_losses)
+#plot it
+plt.plot(range(num_iters), all_losses)
+plt.show()
