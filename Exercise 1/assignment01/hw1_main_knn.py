@@ -114,6 +114,12 @@ def main():
     # Dict to receive the averages for the different k's
     avg_dict = {}
 
+    # randomize the order in the sample set (currently it is sorted by label)
+    #permutation = np.random.permutation(samples_X.shape[0])
+    #samples_X = samples_X[permutation]
+    #samples_y = samples_y[permutation]
+    # commented because the result stays the same for the 5 fold cv.
+
     # Do five fold cross validation
     for k in range(1, 16):
         # calculate the average accuracy of knn using five fold cross validation for current k
@@ -121,7 +127,8 @@ def main():
 
     print("Accuracies for k from 1 to 15 using 5 fold CV:")
     pprint(avg_dict)
-    print("As can be seen k=1 performs the best with an average accuracy of 100%.")
+    best = max(avg_dict, key=avg_dict.get)
+    print("As can be seen k={} performs the best with an average accuracy of {}%.".format(best, avg_dict[best]))
 
     # d)
     # calculate predictions/accuracy tuple for k=1 for all 60,000 images.
