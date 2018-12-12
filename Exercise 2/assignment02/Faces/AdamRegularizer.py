@@ -18,8 +18,8 @@ trainY_one_hot[np.arange(trainY.size), trainY] = 1
 print(trainX.shape)
 print(trainY.shape)
 # Network Parameters
-n_hidden_1 = 256 # 1st layer number of features
-n_hidden_2 = 256 # 2nd layer number of features
+n_hidden_1 = 128 # 1st layer number of features
+n_hidden_2 = 128 # 2nd layer number of features
 n_input =  92*112
 n_output = 20
  
@@ -54,44 +54,40 @@ biases = {
 # Construct model
 pred = multilayer_perceptron(x, weights, biases)
 
+for beta in [0]:
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred,labels=y) + \
+    beta*(tf.nn.l2_loss(weights['h1']) +
+        tf.nn.l2_loss(weights['h2']) +
+        tf.nn.l2_loss(weights['out'])))
+    global_step = tf.Variable(0, trainable=False)
+    starter_learning_rate = 0.1
+    learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
+                                            100000, 0.96, staircase=True)
 
-# Define loss and optimizer
-beta = 0.01
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred,labels=y) + \
-beta*(tf.nn.l2_loss(weights['h1']) +
-    tf.nn.l2_loss(weights['h2']) +
-    tf.nn.l2_loss(weights['out']) +
-    tf.nn.l2_loss(biases['b1']) +
-    tf.nn.l2_loss(biases['b2']) +
-    tf.nn.l2_loss(biases['out'])))
-global_step = tf.Variable(0, trainable=False)
-starter_learning_rate = 0.1
-learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
-                                           100000, 0.96, staircase=True)
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
-optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+    # Initializing the variables
 
-# Initializing the variables
+    init = tf.global_variables_initializer()
+    loss_list = []
 
-init = tf.global_variables_initializer()
-loss_list = []
+    # Launch the graph
+    with tf.Session() as sess:
+        sess.run(init)
+        for steps in range(200):
+            _, loss = sess.run([optimizer, cost], feed_dict={x: trainX, y: trainY_one_hot})
+            
+            #print(steps, loss)        
 
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-    for steps in range(200):
-        _, loss = sess.run([optimizer, cost], feed_dict={x: trainX, y: trainY_one_hot})
+            loss_list.append(loss)
+
+        # Test model
+        correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+        # Calculate accuracy
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        print("Test Accuracy:", accuracy.eval({x: testX, y: testY_one_hot}), accuracy.eval({x: trainX, y: trainY_one_hot}),  '(',beta,')')
         
-        print(steps, loss)        
 
-        loss_list.append(loss)
-
-    # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-    print("Test Accuracy:", accuracy.eval({x: testX, y: testY_one_hot}))
-    
-
-plt.plot(loss_list)
-plt.show()
+    plt.plot(loss_list)
+    plt.show()

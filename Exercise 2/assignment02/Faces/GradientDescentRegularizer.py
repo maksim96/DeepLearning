@@ -56,7 +56,7 @@ pred = multilayer_perceptron(x, weights, biases)
 
 
 # Define loss and optimizer
-beta = 0.01
+beta = 0.015
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred,labels=y) + \
 beta*(tf.nn.l2_loss(weights['h1']) +
     tf.nn.l2_loss(weights['h2']) +
@@ -64,7 +64,7 @@ beta*(tf.nn.l2_loss(weights['h1']) +
 global_step = tf.Variable(0, trainable=False)
 starter_learning_rate = 0.1
 learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
-                                           100000, 0.96, staircase=True)
+                                        100000, 0.96, staircase=True)
 
 optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
@@ -88,7 +88,7 @@ with tf.Session() as sess:
     # Calculate accuracy
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     
-    print("Test Accuracy:", accuracy.eval({x: testX, y: testY_one_hot}))
+    print("Test Accuracy:", accuracy.eval({x: testX, y: testY_one_hot}),  accuracy.eval({x: trainX, y: trainY_one_hot}))
     
 
 plt.plot(loss_list)
