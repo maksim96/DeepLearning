@@ -1,5 +1,5 @@
 """
-USAGE : To run Nesterov with L2, run 'python 03_opt_reg_MNIST.py -- opt nesterov --reg L2'
+USAGE : To run Nesterov with L2, run 'python 03_opt_reg_MNIST.py --opt nesterov --reg L2'
 """
 
 import argparse
@@ -8,15 +8,14 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-
 # Argument Parsing
 parser = argparse.ArgumentParser()
 parser.add_argument('--opt', default='sgd', help='sgd or nesterov [default: sgd]')
-parser.add_argument('--reg', default= None, help='L1/L2/None [default: None]')
+parser.add_argument('--reg', default=None, help='L1/L2/None [default: None]')
 FLAGS = parser.parse_args()
 
-
 # YOUR CODE HERE : Specify the number of hidden units for each layer
+
 
 n_input 	= 784 # e.g. MNIST data input (img shape: 28*28)
 n_hidden1	= 800
